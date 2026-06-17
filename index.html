@@ -2,98 +2,84 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA DE CANALES - CRISTIAN DIAS</title>
+    <title>SISTEMA TV - CRISTIAN DIAS</title>
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
         :root { 
-            --bg: #05070a; 
-            --glass: rgba(255, 255, 255, 0.05); 
-            --accent: #00ff9d; 
-            --border: rgba(255, 255, 255, 0.1); 
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent: #00ff9d;
         }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 30px; overflow: hidden; }
+        body { background: #05070a; color: #fff; font-family: sans-serif; margin: 0; padding: 25px; overflow: hidden; }
 
-        .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .layout { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
         
-        /* Layout exacto de la foto */
-        .layout-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
-        
-        /* Reproductor a la derecha */
-        .video-container { 
-            background: #000; border-radius: 20px; border: 2px solid var(--accent); 
-            height: 400px; width: 100%; box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
+        /* Efecto Liquid Glass */
+        .glass { 
+            background: var(--glass); backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); border-radius: 20px;
         }
 
-        /* Paneles Liquid Glass */
-        .glass-card { 
-            background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border);
-            border-radius: 15px; padding: 20px; cursor: pointer; transition: 0.3s;
-        }
-        .glass-card:hover { border-color: var(--accent); }
-        .activo { border: 2px solid var(--accent) !important; }
-
-        .side-panel { display: flex; flex-direction: column; gap: 15px; }
+        .video-container { background: #000; border: 2px solid var(--accent); height: 420px; border-radius: 25px; box-shadow: 0 0 30px rgba(0,255,157,0.2); }
         
-        /* Carrusel inferior de la foto */
-        .row-nacionales { display: flex; gap: 15px; margin-top: 30px; overflow-x: auto; padding-bottom: 10px; }
-        .canal-item { min-width: 180px; height: 90px; }
+        .card { padding: 15px; margin-bottom: 10px; cursor: pointer; transition: 0.3s; }
+        .card:hover { border-color: var(--accent); transform: scale(1.02); }
+        .active { border: 2px solid var(--accent); }
 
-        .dock { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .carousel { display: flex; gap: 15px; margin-top: 30px; overflow-x: auto; padding: 10px; }
+        .canal-item { min-width: 190px; height: 100px; display: flex; flex-direction: column; justify-content: flex-end; }
+        
+        .live-tag { color: #ff4b4b; font-size: 9px; font-weight: 800; }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div style="font-size: 24px; font-weight: bold;">SISTEMA DE CANALES - CRISTIAN DIAS</div>
-        <div id="reloj" style="color: #888;">07:07 AM - Wed, Jun 17, 2026</div>
+    <header style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <div style="font-size: 22px; font-weight: bold;">SISTEMA DE CANALES - CRISTIAN DIAS</div>
+        <div id="reloj" style="color:#888;">00:00:00</div>
     </header>
 
-    <div class="layout-grid">
-        <div class="side-panel">
-            <div style="color: var(--accent);">🏆 SEÑALES EXCLUSIVAS (MUNDIAL)</div>
-            <div class="glass-card" onclick="window.open('https://www.televicentro.com', '_blank')">Canal 5 (Oficial)</div>
-            <div class="glass-card" onclick="window.open('https://www.deportestvc.com', '_blank')">Deportes TVC</div>
+    <div class="layout">
+        <div class="panel-izq">
+            <div style="color:var(--accent); margin-bottom:10px;">🏆 SEÑALES EXCLUSIVAS</div>
+            <div class="glass card" onclick="window.open('https://www.televicentro.com','_blank')">Canal 5 (Oficial)</div>
+            <div class="glass card" onclick="window.open('https://www.deportestvc.com','_blank')">Deportes TVC</div>
         </div>
-
-        <div class="video-container">
-            <video id="player" class="video-js vjs-default-skin" controls width="100%" height="400px"></video>
+        <div class="video-container glass" id="reproductor-box">
+            <video id="player" class="video-js vjs-default-skin" controls width="100%" height="420px"></video>
         </div>
     </div>
 
-    <div style="margin-top: 30px; color: var(--accent);">🌐 CANALES NACIONALES</div>
-    <div class="row-nacionales" id="lista-canales"></div>
-
-    <div class="dock">
-        <div style="background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:10px;">YT | NF | PRIME</div>
-    </div>
+    <div style="color:var(--accent); margin-top:30px;">🌐 CANALES NACIONALES</div>
+    <div class="carousel" id="lista-canales"></div>
 
     <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
     <script>
         const player = videojs('player', { autoplay: true });
-        const URL_M3U = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u';
-        
+        setInterval(() => document.getElementById('reloj').innerText = new Date().toLocaleTimeString(), 1000);
+
         async function cargar() {
-            const res = await fetch(URL_M3U);
+            const res = await fetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u');
             const data = await res.text();
             const container = document.getElementById('lista-canales');
             const lines = data.split('\n');
-            let count = 0;
 
-            for(let i=0; i<lines.length && count < 6; i++) {
+            for(let i=0; i<lines.length; i++) {
                 if(lines[i].startsWith('#EXTINF:')) {
                     const name = lines[i].split(',')[1];
                     const url = lines[i+1];
-                    const div = document.createElement('div');
-                    div.className = 'glass-card canal-item';
-                    div.innerHTML = `<div style="font-size:10px; color:red">LIVE</div><div>${name.substring(0,15)}</div>`;
-                    div.onclick = () => { 
-                        player.src({src: url, type: 'application/x-mpegURL'}); 
-                        player.play();
-                        document.querySelectorAll('.canal-item').forEach(c => c.classList.remove('activo'));
-                        div.classList.add('activo');
-                    };
-                    container.appendChild(div);
-                    count++;
+                    if(name && url) {
+                        const div = document.createElement('div');
+                        div.className = 'glass card canal-item';
+                        div.innerHTML = `<span class="live-tag">LIVE</span><div>${name}</div>`;
+                        div.onclick = () => {
+                            player.src({src: url, type: 'application/x-mpegURL'});
+                            player.play();
+                            document.querySelectorAll('.canal-item').forEach(c => c.classList.remove('active'));
+                            div.classList.add('active');
+                        };
+                        container.appendChild(div);
+                    }
                 }
             }
         }
