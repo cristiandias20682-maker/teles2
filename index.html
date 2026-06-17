@@ -3,57 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA TV CRISTIAN DIAS</title>
+    <title>Premium Liquid IPTV - CAST</title>
+    <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
-        body { background: #0b0b0b; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; }
-        .sidebar { width: 220px; background: #141414; height: 100vh; padding: 25px; border-right: 1px solid #333; }
-        .content { flex: 1; padding: 30px; }
-        .video-box { width: 100%; max-width: 850px; background: #000; border-radius: 12px; margin-bottom: 25px; aspect-ratio: 16/9; }
-        #video { width: 100%; height: 100%; border-radius: 12px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-        .canal { background: #1f1f1f; padding: 15px; border-radius: 6px; cursor: pointer; text-align: center; border: 1px solid #333; transition: 0.2s; }
-        .canal:hover { background: #007bff; border-color: #007bff; }
-        .logo { font-weight: bold; color: #007bff; margin-bottom: 50px; font-size: 1.2rem; line-height: 1.4; }
+        /* ... TUS ESTILOS EXISTENTES SE MANTIENEN ... */
+        /* AGREGAMOS ESTILO PARA EL BOTÓN DE CAST */
+        .cast-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            padding: 5px;
+        }
+        google-cast-launcher {
+            width: 40px;
+            height: 40px;
+            display: block;
+            cursor: pointer;
+        }
+        /* ... RESTO DE TU CSS ... */
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo">SISTEMA TV<br>CRISTIAN DIAS</div>
-        <div style="color: #666;">● Inicio</div>
-    </div>
-    <div class="content">
-        <h1>Mi TV Honduras</h1>
-        <div class="video-box">
-            <video id="video" controls autoplay></video>
+
+    <div id="contenedor-reproductor" style="position: relative;">
+        <div class="cast-container">
+            <google-cast-launcher></google-cast-launcher>
         </div>
-        <div class="grid" id="lista"></div>
+        <video id="reproductor-tv" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%"></video>
     </div>
 
     <script>
-        const video = document.getElementById('video');
-        const lista = document.getElementById('lista');
-        
-        // Esta es tu lista de canales. 
-        // Si uno deja de funcionar, solo cambias el enlace aquí.
-        const canales = [
-            {n: "HCH", u: "https://stream.hch.tv/hch/hch.m3u8"},
-            {n: "Canal 5", u: "https://edge-televicentro.akamaized.net/hls/live/2000000/canal5/master.m3u8"},
-            {n: "Telecadena", u: "https://edge-televicentro.akamaized.net/hls/live/2000000/telecadena/master.m3u8"},
-            {n: "TSI", u: "https://edge-televicentro.akamaized.net/hls/live/2000000/tsi/master.m3u8"},
-            {n: "Mega TV", u: "https://edge-televicentro.akamaized.net/hls/live/2000000/megatv/master.m3u8"},
-            {n: "Canal 8", u: "https://live.canal8.hn/live.m3u8"}
-        ];
-
-        canales.forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'canal';
-            div.innerText = c.n;
-            div.onclick = () => {
-                video.src = c.u;
-                video.play();
-            };
-            lista.appendChild(div);
-        });
+        window['__onGCastApiAvailable'] = function(isAvailable) {
+            if (isAvailable) {
+                cast.framework.CastContext.getInstance().setOptions({
+                    receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                    autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+                });
+            }
+        };
     </script>
-</body>
+    </body>
 </html>
