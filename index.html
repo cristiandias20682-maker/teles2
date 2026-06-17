@@ -353,7 +353,7 @@
                         let deberiaBorrar = false;
                         
                         for (let j = 0; j < canalesABorrar.length; j++) {
-                            if (nombreMin.indexOf(canalesABorrez[j]) !== -1) {
+                            if (nombreMin.indexOf(canalesABorrar[j]) !== -1) {
                                 deberiaBorrar = true;
                                 break;
                             }
@@ -385,10 +385,9 @@
                 contenedor.innerHTML = '';
                 contenedor.appendChild(fragmento);
 
-                // Auto-arranque al cargar
                 if(primerLink) {
                     player.src({ type: 'application/x-mpegURL', src: primerLink });
-                    player.play().catch(e => console.log("Espera usuario"));
+                    player.play().catch(e => console.log("Esperando interacción..."));
                 }
             } catch (error) { console.error(error); }
         }
