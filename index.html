@@ -283,9 +283,9 @@
 
     <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
     <script>
-        // CONFIGURACIÓN TÉCNICA: Inicialización específica para Smart TV y Chromecast
         const player = videojs('reproductor-tv', { 
             fluid: true,
+            autoplay: 'muted',
             html5: { hls: { overrideNative: true } }
         });
         
@@ -334,12 +334,12 @@
         async function cargarCanales() {
             try {
                 const contenedor = document.getElementById('contenedor-canales-dinamicos');
-                // CONFIGURACIÓN TÉCNICA: Se añade el modo CORS para evitar bloqueos del navegador de la TV
                 const respuesta = await fetch(URL_M3U, { mode: 'cors' });
                 const texto = await respuesta.text();
                 const lineas = texto.split('\n');
                 const fragmento = document.createDocumentFragment();
                 let nombreCanal = '';
+                let primerLink = null;
 
                 for (let i = 0; i < lineas.length; i++) {
                     const linea = lineas[i].trim();
@@ -353,25 +353,23 @@
                         let deberiaBorrar = false;
                         
                         for (let j = 0; j < canalesABorrar.length; j++) {
-                            if (nombreMin.indexOf(canalesABorrar[j]) !== -1) {
+                            if (nombreMin.indexOf(canalesABorrez[j]) !== -1) {
                                 deberiaBorrar = true;
                                 break;
                             }
                         }
 
                         if (!deberiaBorrar) {
+                            if (!primerLink) primerLink = linea;
+
                             const card = document.createElement('div');
                             card.className = 'card-canal';
                             card.tabIndex = 0;
                             card.innerHTML = `<span class="tag-live-premium">LIVE</span><div class="canal-meta">${nombreCanal.substring(0, 12)}</div><div class="canal-titulo-texto">${nombreCanal}</div>`;
                             
-                            const urlActual = linea;
                             const ejecutarSeleccion = function() {
-                                // CONFIGURACIÓN TÉCNICA: Forzamos la fuente del reproductor para HLS
-                                player.src({ type: 'application/x-mpegURL', src: urlActual });
-                                player.load();
-                                player.play().catch(e => console.log("Espera usuario"));
-                                
+                                player.src({ type: 'application/x-mpegURL', src: linea });
+                                player.play();
                                 const todas = contenedor.getElementsByClassName('card-canal');
                                 for (let j = 0; j < todas.length; j++) todas[j].classList.remove('activo');
                                 card.classList.add('activo');
@@ -379,7 +377,6 @@
 
                             card.onclick = ejecutarSeleccion;
                             card.onkeydown = function(e) { if(e.key === 'Enter') ejecutarSeleccion(); };
-                            
                             fragmento.appendChild(card);
                         }
                         nombreCanal = '';
@@ -387,6 +384,12 @@
                 }
                 contenedor.innerHTML = '';
                 contenedor.appendChild(fragmento);
+
+                // Auto-arranque al cargar
+                if(primerLink) {
+                    player.src({ type: 'application/x-mpegURL', src: primerLink });
+                    player.play().catch(e => console.log("Espera usuario"));
+                }
             } catch (error) { console.error(error); }
         }
 
