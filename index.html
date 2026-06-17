@@ -9,311 +9,209 @@
 
     <style>
         /* ==========================================================================
-           1. VARIABLES DE SISTEMA
+           1. VARIABLES DE DISEÑO PREMIUM
            ========================================================================== */
         :root {
-            --color-fondo-primario: #0a111e;
-            --color-fondo-secundario: #05070b;
-            --color-acentuado-verde: #00ff9d;
-            --color-acentuado-cian: #00bfff;
-            --color-texto-blanco: #f7fafc;
-            --color-texto-azul: #90cdf4;
-            --animacion-suave: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --bg-deep: #05070a;
+            --panel-glass: rgba(255, 255, 255, 0.03);
+            --border-glow: rgba(255, 255, 255, 0.1);
+            --accent-green: #00ff9d;
+            --accent-cyan: #00bfff;
+            --text-main: #f7fafc;
+            --text-sub: #90cdf4;
+            --anim-suave: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* ==========================================================================
-           2. ESTILOS BASE DEL DOCUMENTO
-           ========================================================================== */
         body {
-            background: radial-gradient(circle at 50% 30%, var(--color-fondo-primario) 0%, var(--color-fondo-secundario) 100%);
-            color: var(--color-texto-blanco);
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 40px;
             min-height: 100vh;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
         }
 
         /* ==========================================================================
-           3. PANEL DE CONTROL LATERAL (NAVEGACIÓN)
+           2. ENCABEZADO Y RELOJ
            ========================================================================== */
-        #control-vertical-tv {
-            position: fixed;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 40px; 
+            padding: 0 20px;
         }
 
-        .btn-control-total {
-            background: #1a2537;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            transition: var(--animacion-suave);
-        }
-
-        .btn-control-total:hover {
-            border-color: var(--color-acentuado-verde);
-            box-shadow: 0 0 20px var(--color-acentuado-verde);
-        }
-
-        /* ==========================================================================
-           4. CONTENEDOR PRINCIPAL Y CABECERA
-           ========================================================================== */
-        .contenido-principal {
-            padding-left: 100px;
-            padding-right: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        #header-sistema {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 30px 0;
-        }
-
-        .titulo-marca {
-            font-size: 28px;
-            font-weight: 900;
+        .titulo-marca { 
+            font-size: 28px; 
+            font-weight: 800; 
+            letter-spacing: 2px;
             text-transform: uppercase;
-            background: linear-gradient(90deg, #fff, #90cdf4);
+            background: linear-gradient(90deg, #fff, var(--text-sub));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        #reloj-digital {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--color-texto-azul);
+        #reloj-digital { font-size: 20px; font-weight: bold; color: var(--text-sub); }
+
+        /* ==========================================================================
+           3. ESTRUCTURA LAYOUT (GRID)
+           ========================================================================== */
+        .layout-grid { 
+            display: grid; 
+            grid-template-columns: 350px 1fr; 
+            gap: 40px; 
         }
 
         /* ==========================================================================
-           5. REPRODUCTOR Y BUSCADOR
+           4. PANEL LATERAL (SEÑALES EXCLUSIVAS)
            ========================================================================== */
-        #contenedor-reproductor {
-            width: 100%;
-            border-radius: 30px;
-            overflow: hidden;
-            border: 3px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            margin-bottom: 40px;
+        .side-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        .card-premium {
+            background: var(--panel-glass);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            transition: var(--anim-suave);
+            cursor: pointer;
+            font-weight: 600;
         }
 
-        #buscador-canales {
-            width: 100%;
-            max-width: 450px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            color: white;
-            font-size: 16px;
-            margin-bottom: 30px;
-            outline: none;
+        .card-premium:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.2);
+            transform: scale(1.02);
         }
 
         /* ==========================================================================
-           6. SECCIONES Y GRID DE CANALES
+           5. REPRODUCTOR Y CANALES NACIONALES
            ========================================================================== */
-        .seccion-interfaz { margin-bottom: 40px; }
-        
-        .titulo-fila {
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            margin-bottom: 20px;
-            color: var(--color-texto-azul);
+        .video-box { 
+            background: #000; 
+            border-radius: 30px; 
+            overflow: hidden; 
+            border: 2px solid var(--border-glow);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
-        .grid-carrusel-infinito {
-            display: flex;
-            gap: 25px;
-            overflow-x: auto;
+        .titulo-seccion { font-size: 18px; color: var(--text-sub); margin: 40px 0 20px 0; }
+
+        .canal-list { 
+            display: flex; 
+            gap: 20px; 
+            overflow-x: auto; 
             padding: 10px 0;
             scrollbar-width: none;
         }
 
-        .card-canal {
-            background: rgba(25, 36, 56, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 25px;
-            width: 220px;
+        .canal-item {
+            min-width: 180px;
             height: 90px;
-            flex-shrink: 0;
+            background: rgba(26, 30, 38, 0.8);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             cursor: pointer;
-            transition: var(--animacion-suave);
+            border: 1px solid var(--border-glow);
+            transition: var(--anim-suave);
+            padding: 10px;
         }
 
-        .card-canal:hover {
-            transform: scale(1.08);
-            border-color: var(--color-acentuado-cian);
-            box-shadow: 0 0 20px var(--color-acentuado-cian);
-        }
-
-        .card-canal.activo {
-            border-color: var(--color-acentuado-verde);
-            background: rgba(0, 255, 157, 0.15);
-        }
+        .canal-item:hover { border-color: var(--accent-green); transform: translateY(-5px); }
+        .canal-item.activo { border: 2px solid var(--accent-green); background: rgba(0, 255, 157, 0.1); }
     </style>
 </head>
 <body>
 
-    <div id="control-vertical-tv">
-        <button class="btn-control-total" onclick="navegar('arriba')">▲</button>
-        <button class="btn-control-total" onclick="navegar('abajo')">▼</button>
-    </div>
+    <header>
+        <div class="titulo-marca">SISTEMA DE CANALES - CRISTIAN DIAS</div>
+        <div id="reloj-digital">00:00:00</div>
+    </header>
 
-    <main class="contenido-principal">
-        <header id="header-sistema">
-            <h1 class="titulo-marca">SISTEMA DE CANALES - CRISTIAN DIAS</h1>
-            <div id="reloj-digital">Inicializando...</div>
-        </header>
+    <div class="layout-grid">
+        <aside class="side-panel">
+            <h3 style="color:var(--accent-green)">🏆 SEÑALES EXCLUSIVAS (MUNDIAL)</h3>
+            <div class="card-premium" onclick="window.open('https://www.televicentro.com', '_blank')">Canal 5 (Oficial)</div>
+            <div class="card-premium" onclick="window.open('https://www.deportestvc.com', '_blank')">Deportes TVC</div>
+        </aside>
 
-        <input type="text" id="buscador-canales" placeholder="🔍 Filtrar canales por nombre..." onkeyup="filtrarLista()">
-
-        <section id="contenedor-reproductor">
-            <video id="reproductor-tv" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%"></video>
-        </section>
-
-        <section class="seccion-interfaz">
-            <div class="titulo-fila">🏆 SEÑALES EXCLUSIVAS (MUNDIAL)</div>
-            <div class="grid-carrusel-infinito">
-                <div class="card-canal" onclick="window.open('https://www.televicentro.com', '_blank')">Canal 5 (Oficial)</div>
-                <div class="card-canal" onclick="window.open('https://www.deportestvc.com', '_blank')">Deportes TVC</div>
+        <main class="main-panel">
+            <div class="video-box">
+                <video id="reproductor-tv" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%" height="480px"></video>
             </div>
-        </section>
-
-        <section class="seccion-interfaz">
-            <div class="titulo-fila">🌐 CANALES NACIONALES</div>
-            <div class="grid-carrusel-infinito" id="contenedor-canales-dinamicos"></div>
-        </section>
-    </main>
+            
+            <h3 class="titulo-seccion">🌐 CANALES NACIONALES</h3>
+            <div class="canal-list" id="contenedor-canales"></div>
+        </main>
+    </div>
 
     <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
     <script>
         /**
-         * LÓGICA DE VIDEO:
-         * Configuración para streaming HLS optimizado.
+         * LÓGICA DE VIDEO: Configuración robusta para HLS
          */
         const player = videojs('reproductor-tv', { 
             autoplay: true, 
             muted: false,
-            html5: { 
-                hls: { 
-                    overrideNative: true,
-                    bandwidth: 6000000 
-                } 
-            }
+            html5: { hls: { overrideNative: true, bandwidth: 6000000 } }
         });
 
-        /* Vigilancia de Audio (Anti-silencio) */
+        // Anti-silencio automático
         player.ready(function() {
             this.volume(1.0);
-            this.on('volumechange', function() { 
+            this.on('volumechange', () => { 
                 if(this.muted()) this.muted(false); 
                 if(this.volume() < 1.0) this.volume(1.0); 
             });
         });
 
-        /**
-         * RELOJ Y UTILIDADES:
-         * Actualización en vivo del tiempo.
-         */
+        // Reloj en tiempo real
         function actualizarReloj() {
-            const elReloj = document.getElementById('reloj-digital');
-            elReloj.innerText = new Date().toLocaleTimeString();
+            document.getElementById('reloj-digital').innerText = new Date().toLocaleTimeString();
         }
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
         /**
-         * BUSCADOR DE CANALES:
-         * Filtra los elementos de la interfaz en tiempo real.
-         */
-        function filtrarLista() {
-            const texto = document.getElementById('buscador-canales').value.toLowerCase();
-            const tarjetas = document.querySelectorAll('.card-canal');
-            tarjetas.forEach(function(card) {
-                if (card.innerText.toLowerCase().includes(texto)) {
-                    card.style.display = "";
-                } else {
-                    card.style.display = "none";
-                }
-            });
-        }
-
-        /**
-         * NAVEGACIÓN:
-         * Control vertical para el mando.
-         */
-        function navegar(direccion) {
-            window.scrollTo({
-                top: direccion === 'arriba' ? 0 : 800,
-                behavior: 'smooth'
-            });
-        }
-
-        /**
-         * CARGA DE CANALES:
-         * Fetch y procesamiento de lista remota M3U.
+         * LÓGICA DE CARGA: Procesamiento eficiente de M3U
          */
         const URL_M3U = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u';
-        const listaNegra = ["alfa & omega vision", "aviva tv", "campus tv", "canal 5 el líder", "canal 7 talanga visión", "canal 32 sto", "cholusat sur 36", "deportes tvc", "cva tv", "edn tv", "girasol tv", "globo tv", "inmaculada tv", "la 98.1 tv", "litoral atlántico", "ltv", "maya tv"];
+        const ignorar = ["alfa & omega vision", "aviva tv", "campus tv", "canal 5 el líder", "canal 7 talanga visión", "canal 32 sto", "cholusat sur 36", "deportes tvc", "cva tv", "edn tv", "girasol tv", "globo tv", "inmaculada tv", "la 98.1 tv", "litoral atlántico", "ltv", "maya tv"];
 
         async function cargarCanales() {
             try {
-                const respuesta = await fetch(URL_M3U);
-                const contenido = await respuesta.text();
-                const contenedor = document.getElementById('contenedor-canales-dinamicos');
-                const lineas = contenido.split('\n');
+                const res = await fetch(URL_M3U);
+                const txt = await res.text();
+                const container = document.getElementById('contenedor-canales');
+                const lineas = txt.split('\n');
 
-                // Procesamiento de lista para evitar saturación de memoria
                 for(let i = 0; i < lineas.length; i++) {
-                    if (lineas[i].startsWith('#EXTINF:')) {
+                    if(lineas[i].startsWith('#EXTINF:')) {
                         const nombre = lineas[i].split(',')[1];
                         const url = lineas[i+1];
                         
-                        if (nombre && url && !listaNegra.some(b => nombre.toLowerCase().includes(b))) {
-                            const tarjeta = document.createElement('div');
-                            tarjeta.className = 'card-canal';
-                            tarjeta.innerHTML = `<div>${nombre.substring(0,20)}</div>`;
-                            
-                            // Acción de clic
-                            tarjeta.onclick = function() {
+                        if(nombre && url && !ignorar.some(b => nombre.toLowerCase().includes(b))) {
+                            const div = document.createElement('div');
+                            div.className = 'canal-item';
+                            div.innerHTML = `<div>${nombre.substring(0,20)}</div>`;
+                            div.onclick = function() {
                                 player.src({src: url, type: 'application/x-mpegURL'});
                                 player.play();
-                                document.querySelectorAll('.card-canal').forEach(c => c.classList.remove('activo'));
-                                tarjeta.classList.add('activo');
+                                document.querySelectorAll('.canal-item').forEach(c => c.classList.remove('activo'));
+                                div.classList.add('activo');
                             };
-                            
-                            contenedor.appendChild(tarjeta);
+                            container.appendChild(div);
                         }
                     }
                 }
-            } catch (error) {
-                console.error("Error al cargar la lista de canales:", error);
-            }
+            } catch(e) { console.error("Error al cargar lista:", e); }
         }
 
-        // Ejecución al terminar la carga
         window.onload = cargarCanales;
-
     </script>
 </body>
 </html>
