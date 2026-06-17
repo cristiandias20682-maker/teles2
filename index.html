@@ -5,32 +5,27 @@
         :root { --glass: rgba(255, 255, 255, 0.05); --accent: #00ff9d; }
         body { background: #05070a; color: white; font-family: sans-serif; margin: 0; padding: 20px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* Efecto Liquid Glass */
         .glass { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
-        
         .layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; flex-grow: 1; }
-        .sidebar { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .sidebar { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
         .video-box { border: 2px solid var(--accent); overflow: hidden; display: flex; align-items: center; justify-content: center; }
         
-        /* Dock y Botones */
-        .dock { display: flex; justify-content: center; gap: 40px; padding: 20px; margin-top: 20px; }
-        .btn { padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 10px; cursor: pointer; }
+        /* Lista de canales inferior */
+        .channel-list { display: flex; gap: 10px; overflow-x: auto; padding: 10px; margin-top: 10px; }
+        .channel-item { min-width: 120px; height: 60px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border-radius: 10px; cursor: pointer; font-size: 10px; text-align: center; }
+        
+        .dock { display: flex; justify-content: center; gap: 40px; padding: 15px; }
     </style>
 </head>
 <body>
 
     <div class="layout">
         <div class="glass sidebar">
-            <h3 style="color:var(--accent)">🏆 NOTICIAS SULA (SB)</h3>
-            <div class="glass" style="padding:15px; cursor:pointer;">Noticias Sula TV</div>
-            <div class="glass" style="padding:15px; cursor:pointer;">Sula En Vivo</div>
-            
-            <h3 style="color:var(--accent)">SEÑALES</h3>
-            <div class="glass" style="padding:15px; cursor:pointer;">Canal 5 (Oficial)</div>
-            
+            <h3 style="color:var(--accent)">🏆 CANALES</h3>
+            <div id="sidebar-channels"></div>
             <div style="display:flex; gap:10px; margin-top:auto">
-                <button class="btn">◀ IZQ</button>
-                <button class="btn">DER ▶</button>
+                <button class="glass" style="padding:10px">◀ IZQ</button>
+                <button class="glass" style="padding:10px">DER ▶</button>
             </div>
         </div>
 
@@ -39,11 +34,38 @@
         </div>
     </div>
 
+    <div class="glass channel-list" id="channel-list"></div>
+
     <div class="glass dock">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" width="40">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" width="40">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg" width="40">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" width="30">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" width="30">
     </div>
 
+    <script>
+        // Lista de canales a filtrar
+        const blockList = ["Alfa", "Aviva", "Campus", "Girasol", "32 STO", "Cholusat", "Talanga"];
+        
+        async function loadChannels() {
+            // Fuente de canales masiva
+            const response = await fetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u');
+            const data = await response.text();
+            const list = document.getElementById('channel-list');
+            
+            data.split('\n').forEach((line, i, arr) => {
+                if (line.startsWith('#EXTINF:')) {
+                    const name = line.split(',')[1];
+                    const url = arr[i + 1];
+                    if (!blockList.some(b => name.includes(b))) {
+                        const div = document.createElement('div');
+                        div.className = 'channel-item';
+                        div.innerText = name.substring(0, 15);
+                        div.onclick = () => { document.getElementById('player').src = url; document.getElementById('player').play(); };
+                        list.appendChild(div);
+                    }
+                }
+            });
+        }
+        loadChannels();
+    </script>
 </body>
 </html>
