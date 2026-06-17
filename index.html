@@ -285,8 +285,19 @@
     <script>
         const player = videojs('reproductor-tv', { 
             fluid: true,
-            autoplay: 'muted',
+            autoplay: true,
+            muted: false,
             html5: { hls: { overrideNative: true } }
+        });
+
+        // VIGILANTE DE AUDIO: Forzamos el volumen siempre al máximo
+        player.ready(function() {
+            this.volume(1.0);
+            this.muted(false);
+            this.on('volumechange', function() {
+                if (this.muted()) this.muted(false);
+                if (this.volume() < 1.0) this.volume(1.0);
+            });
         });
         
         const URL_M3U = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u';
@@ -370,6 +381,8 @@
                             const ejecutarSeleccion = function() {
                                 player.src({ type: 'application/x-mpegURL', src: linea });
                                 player.play();
+                                player.volume(1.0);
+                                player.muted(false);
                                 const todas = contenedor.getElementsByClassName('card-canal');
                                 for (let j = 0; j < todas.length; j++) todas[j].classList.remove('activo');
                                 card.classList.add('activo');
@@ -387,7 +400,7 @@
 
                 if(primerLink) {
                     player.src({ type: 'application/x-mpegURL', src: primerLink });
-                    player.play().catch(e => console.log("Esperando interacción..."));
+                    player.play().catch(e => console.log("Espera usuario"));
                 }
             } catch (error) { console.error(error); }
         }
