@@ -2,216 +2,84 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Liquid IPTV | Sistema de Cristian Dias</title>
-
+    <title>SISTEMA DE CANALES - CRISTIAN DIAS</title>
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
-
     <style>
-        /* ==========================================================================
-           1. VARIABLES DE DISEÑO PREMIUM
-           ========================================================================== */
-        :root {
-            --bg-deep: #05070a;
-            --panel-glass: rgba(255, 255, 255, 0.03);
-            --border-glow: rgba(255, 255, 255, 0.1);
-            --accent-green: #00ff9d;
-            --accent-cyan: #00bfff;
-            --text-main: #f7fafc;
-            --text-sub: #90cdf4;
-            --anim-suave: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            margin: 0;
-            padding: 40px;
-            min-height: 100vh;
-        }
-
-        /* ==========================================================================
-           2. ENCABEZADO Y RELOJ
-           ========================================================================== */
-        header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 40px; 
-            padding: 0 20px;
-        }
-
-        .titulo-marca { 
-            font-size: 28px; 
-            font-weight: 800; 
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            background: linear-gradient(90deg, #fff, var(--text-sub));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        #reloj-digital { font-size: 20px; font-weight: bold; color: var(--text-sub); }
-
-        /* ==========================================================================
-           3. ESTRUCTURA LAYOUT (GRID)
-           ========================================================================== */
-        .layout-grid { 
-            display: grid; 
-            grid-template-columns: 350px 1fr; 
-            gap: 40px; 
-        }
-
-        /* ==========================================================================
-           4. PANEL LATERAL (SEÑALES EXCLUSIVAS)
-           ========================================================================== */
-        .side-panel { display: flex; flex-direction: column; gap: 20px; }
-
-        .card-premium {
-            background: var(--panel-glass);
-            border: 1px solid var(--border-glow);
-            border-radius: 20px;
-            padding: 25px;
-            backdrop-filter: blur(15px);
-            transition: var(--anim-suave);
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .card-premium:hover {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 25px rgba(0, 191, 255, 0.2);
-            transform: scale(1.02);
-        }
-
-        /* ==========================================================================
-           5. REPRODUCTOR Y CANALES NACIONALES
-           ========================================================================== */
-        .video-box { 
-            background: #000; 
-            border-radius: 30px; 
-            overflow: hidden; 
-            border: 2px solid var(--border-glow);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-
-        .titulo-seccion { font-size: 18px; color: var(--text-sub); margin: 40px 0 20px 0; }
-
-        .canal-list { 
-            display: flex; 
-            gap: 20px; 
-            overflow-x: auto; 
-            padding: 10px 0;
-            scrollbar-width: none;
-        }
-
-        .canal-item {
-            min-width: 180px;
-            height: 90px;
-            background: rgba(26, 30, 38, 0.8);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid var(--border-glow);
-            transition: var(--anim-suave);
-            padding: 10px;
-        }
-
-        .canal-item:hover { border-color: var(--accent-green); transform: translateY(-5px); }
-        .canal-item.activo { border: 2px solid var(--accent-green); background: rgba(0, 255, 157, 0.1); }
+        :root { --bg: #05070a; --panel: #1a1e26; --accent: #00ff9d; --gray: #888; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 30px; overflow: hidden; }
+        
+        .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        /* Layout de la foto: Izquierda señales, Derecha reproductor */
+        .main-layout { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        
+        .video-container { background: #000; border-radius: 20px; border: 2px solid var(--accent); height: 400px; width: 100%; }
+        .side-panel { display: flex; flex-direction: column; gap: 15px; }
+        .card { background: var(--panel); border-radius: 12px; padding: 20px; cursor: pointer; border: 1px solid #333; }
+        .card:hover { border-color: var(--accent); }
+        
+        /* Carrusel inferior de la foto */
+        .carousel-bottom { display: flex; gap: 15px; margin-top: 30px; overflow-x: auto; padding-bottom: 10px; }
+        .channel-card { min-width: 200px; height: 100px; background: var(--panel); border-radius: 15px; padding: 15px; cursor: pointer; border: 1px solid #333; }
+        .channel-card.activo { border: 2px solid var(--accent); }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="titulo-marca">SISTEMA DE CANALES - CRISTIAN DIAS</div>
-        <div id="reloj-digital">00:00:00</div>
+    <header class="header">
+        <div style="font-size: 24px; font-weight: bold;">SISTEMA DE CANALES - CRISTIAN DIAS</div>
+        <div id="reloj" style="font-size: 20px; color: var(--gray);">00:00:00</div>
     </header>
 
-    <div class="layout-grid">
-        <aside class="side-panel">
-            <h3 style="color:var(--accent-green)">🏆 SEÑALES EXCLUSIVAS (MUNDIAL)</h3>
-            <div class="card-premium" onclick="window.open('https://www.televicentro.com', '_blank')">Canal 5 (Oficial)</div>
-            <div class="card-premium" onclick="window.open('https://www.deportestvc.com', '_blank')">Deportes TVC</div>
-        </aside>
+    <div class="main-layout">
+        <div class="side-panel">
+            <div style="color: var(--accent);">🏆 SEÑALES EXCLUSIVAS (MUNDIAL)</div>
+            <div class="card" onclick="window.open('https://www.televicentro.com', '_blank')">Canal 5 (Oficial)</div>
+            <div class="card" onclick="window.open('https://www.deportestvc.com', '_blank')">Deportes TVC</div>
+        </div>
 
-        <main class="main-panel">
-            <div class="video-box">
-                <video id="reproductor-tv" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%" height="480px"></video>
-            </div>
-            
-            <h3 class="titulo-seccion">🌐 CANALES NACIONALES</h3>
-            <div class="canal-list" id="contenedor-canales"></div>
-        </main>
+        <div class="video-container">
+            <video id="player" class="video-js vjs-default-skin" controls width="100%" height="400px"></video>
+        </div>
     </div>
+
+    <div style="margin-top: 30px; color: var(--accent);">🌐 CANALES NACIONALES</div>
+    <div class="carousel-bottom" id="lista-canales"></div>
 
     <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
     <script>
-        /**
-         * LÓGICA DE VIDEO: Configuración robusta para HLS
-         */
-        const player = videojs('reproductor-tv', { 
-            autoplay: true, 
-            muted: false,
-            html5: { hls: { overrideNative: true, bandwidth: 6000000 } }
-        });
+        const player = videojs('player', { autoplay: true, html5: { hls: { overrideNative: true } } });
+        
+        setInterval(() => document.getElementById('reloj').innerText = new Date().toLocaleTimeString(), 1000);
 
-        // Anti-silencio automático
-        player.ready(function() {
-            this.volume(1.0);
-            this.on('volumechange', () => { 
-                if(this.muted()) this.muted(false); 
-                if(this.volume() < 1.0) this.volume(1.0); 
-            });
-        });
-
-        // Reloj en tiempo real
-        function actualizarReloj() {
-            document.getElementById('reloj-digital').innerText = new Date().toLocaleTimeString();
-        }
-        setInterval(actualizarReloj, 1000);
-        actualizarReloj();
-
-        /**
-         * LÓGICA DE CARGA: Procesamiento eficiente de M3U
-         */
         const URL_M3U = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u';
         const ignorar = ["alfa & omega vision", "aviva tv", "campus tv", "canal 5 el líder", "canal 7 talanga visión", "canal 32 sto", "cholusat sur 36", "deportes tvc", "cva tv", "edn tv", "girasol tv", "globo tv", "inmaculada tv", "la 98.1 tv", "litoral atlántico", "ltv", "maya tv"];
 
-        async function cargarCanales() {
-            try {
-                const res = await fetch(URL_M3U);
-                const txt = await res.text();
-                const container = document.getElementById('contenedor-canales');
-                const lineas = txt.split('\n');
+        async function cargar() {
+            const res = await fetch(URL_M3U);
+            const data = await res.text();
+            const container = document.getElementById('lista-canales');
+            const lines = data.split('\n');
 
-                for(let i = 0; i < lineas.length; i++) {
-                    if(lineas[i].startsWith('#EXTINF:')) {
-                        const nombre = lineas[i].split(',')[1];
-                        const url = lineas[i+1];
-                        
-                        if(nombre && url && !ignorar.some(b => nombre.toLowerCase().includes(b))) {
-                            const div = document.createElement('div');
-                            div.className = 'canal-item';
-                            div.innerHTML = `<div>${nombre.substring(0,20)}</div>`;
-                            div.onclick = function() {
-                                player.src({src: url, type: 'application/x-mpegURL'});
-                                player.play();
-                                document.querySelectorAll('.canal-item').forEach(c => c.classList.remove('activo'));
-                                div.classList.add('activo');
-                            };
-                            container.appendChild(div);
-                        }
+            for(let i=0; i<lines.length; i++) {
+                if(lines[i].startsWith('#EXTINF:')) {
+                    const name = lines[i].split(',')[1];
+                    const url = lines[i+1];
+                    if(name && url && !ignorar.some(b => name.toLowerCase().includes(b))) {
+                        const div = document.createElement('div');
+                        div.className = 'channel-card';
+                        div.innerHTML = `<div style="font-size: 10px; color:red">LIVE</div><div>${name.substring(0,20)}</div>`;
+                        div.onclick = () => { 
+                            player.src({src: url, type: 'application/x-mpegURL'}); 
+                            player.play();
+                            document.querySelectorAll('.channel-card').forEach(c => c.classList.remove('activo'));
+                            div.classList.add('activo');
+                        };
+                        container.appendChild(div);
                     }
                 }
-            } catch(e) { console.error("Error al cargar lista:", e); }
+            }
         }
-
-        window.onload = cargarCanales;
+        cargar();
     </script>
 </body>
 </html>
