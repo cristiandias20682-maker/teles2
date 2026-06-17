@@ -2,64 +2,47 @@
 <html lang="es">
 <head>
     <style>
-        :root {
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.15);
-            --accent: #00ff9d;
-        }
-
-        body { background: #05070a; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
-
-        /* EFECTO LIQUID GLASS */
-        .liquid-glass {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .main-container { display: grid; grid-template-columns: 320px 1fr; gap: 20px; height: 70vh; }
-
-        /* Panel Lateral */
-        .sidebar { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px; border-radius: 10px; cursor: pointer; }
+        :root { --glass: rgba(255, 255, 255, 0.05); --accent: #00ff9d; }
+        body { background: #05070a; color: white; font-family: sans-serif; margin: 0; padding: 20px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* Video Box */
+        /* Efecto Liquid Glass */
+        .glass { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
+        
+        .layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; flex-grow: 1; }
+        .sidebar { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         .video-box { border: 2px solid var(--accent); overflow: hidden; display: flex; align-items: center; justify-content: center; }
-
-        /* Dock de Apps */
-        .dock { display: flex; justify-content: center; gap: 30px; padding: 15px; margin-top: 20px; }
-        .app-icon { width: 40px; cursor: pointer; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
+        
+        /* Dock y Botones */
+        .dock { display: flex; justify-content: center; gap: 40px; padding: 20px; margin-top: 20px; }
+        .btn { padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <div class="liquid-glass sidebar">
-            <h3 style="color: var(--accent);">🏆 NOTICIAS SULA (SB)</h3>
-            <div class="liquid-glass" style="padding:10px; cursor:pointer;">Noticias Sula TV</div>
-            <div class="liquid-glass" style="padding:10px; cursor:pointer;">Sula En Vivo</div>
+    <div class="layout">
+        <div class="glass sidebar">
+            <h3 style="color:var(--accent)">🏆 NOTICIAS SULA (SB)</h3>
+            <div class="glass" style="padding:15px; cursor:pointer;">Noticias Sula TV</div>
+            <div class="glass" style="padding:15px; cursor:pointer;">Sula En Vivo</div>
             
-            <h3 style="color: var(--accent);">SEÑALES</h3>
-            <div class="liquid-glass" style="padding:10px; cursor:pointer;">Canal 5 (Oficial)</div>
+            <h3 style="color:var(--accent)">SEÑALES</h3>
+            <div class="glass" style="padding:15px; cursor:pointer;">Canal 5 (Oficial)</div>
             
-            <div style="display: flex; gap: 10px; margin-top: auto;">
-                <button class="nav-btn">◀ IZQ</button>
-                <button class="nav-btn">DER ▶</button>
+            <div style="display:flex; gap:10px; margin-top:auto">
+                <button class="btn">◀ IZQ</button>
+                <button class="btn">DER ▶</button>
             </div>
         </div>
 
-        <div class="liquid-glass video-box">
+        <div class="glass video-box">
             <video id="player" controls style="width:100%; height:100%"></video>
         </div>
     </div>
 
-    <div class="liquid-glass dock">
-        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg">
-        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg">
-        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg">
+    <div class="glass dock">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" width="40">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" width="40">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg" width="40">
     </div>
 
 </body>
