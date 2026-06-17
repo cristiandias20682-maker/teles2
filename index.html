@@ -21,18 +21,9 @@
         .video-wrapper { background: black; border: 2px solid var(--accent); border-radius: 20px; overflow: hidden; display: flex; }
         .video-js { width: 100% !important; height: 100% !important; }
 
-        /* Mejora de fluidez */
-        .shelf { 
-            display: flex; gap: 20px; overflow-x: auto; padding: 20px; margin-top: 15px;
-            scroll-behavior: smooth; /* Esto quita lo trabado */
-            scroll-snap-type: x mandatory; /* Alineación suave */
-        }
-        .channel-card { 
-            min-width: 180px; height: 90px; flex-shrink: 0; padding: 12px; cursor: pointer; 
-            border: var(--glass-border); border-radius: 15px; font-size: 11px; 
-            background: rgba(0,0,0,0.4); scroll-snap-align: start; transition: 0.3s; 
-        }
-        .channel-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .shelf { display: flex; gap: 20px; overflow-x: hidden; padding: 20px; margin-top: 15px; } /* Cambiado a hidden para control JS */
+        .channel-card { min-width: 180px; height: 90px; flex-shrink: 0; padding: 12px; cursor: pointer; border: var(--glass-border); border-radius: 15px; background: rgba(0,0,0,0.4); transition: 0.3s; }
+        .channel-card:hover { border-color: var(--accent); }
 
         .btn-side { width: 60px; height: 35px; border-radius: 8px; border: var(--glass-border); background: rgba(255,255,255,0.1); cursor: pointer; color: white; font-weight: bold; }
         
@@ -50,8 +41,8 @@
             <div class="channel-card" style="height: auto; margin-bottom: 10px;" onclick="window.open('https://www.deportestvc.com')">Deportes TVC</div>
             
             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button onclick="document.getElementById('shelf').scrollBy({left: -300, behavior: 'smooth'})" class="btn-side">◀ IZQ</button>
-                <button onclick="document.getElementById('shelf').scrollBy({left: 300, behavior: 'smooth'})" class="btn-side">DER ▶</button>
+                <button onclick="moverSuave(-400)" class="btn-side">◀ IZQ</button>
+                <button onclick="moverSuave(400)" class="btn-side">DER ▶</button>
             </div>
         </div>
         <div class="video-wrapper">
@@ -71,6 +62,26 @@
     <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
     <script>
         const player = videojs('reproductor', { autoplay: true });
+        
+        // Función de movimiento suave por JS
+        function moverSuave(amount) {
+            const shelf = document.getElementById('shelf');
+            const start = shelf.scrollLeft;
+            const target = start + amount;
+            const duration = 600; // milisegundos
+            const startTime = performance.now();
+
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Easing suave
+                const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+                shelf.scrollLeft = start + (amount * ease);
+                if (progress < 1) requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+        }
+
         async function load() {
             const res = await fetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u');
             const data = await res.text();
