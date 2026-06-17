@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SISTEMA TV - CRISTIAN DIAS</title>
+    <link rel="manifest" href='data:application/json,{"name":"Sistema TV","short_name":"TV","display":"standalone","start_url":"/"}'>
+    <style>
+        body { background: #05070a; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
+        .glass { background: rgba(20, 20, 20, 0.9); border: 1px solid rgba(0, 255, 157, 0.3); border-radius: 20px; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 250px 1fr; gap: 20px; }
+        .btn { padding: 15px 30px; border-radius: 10px; border: 1px solid white; background: transparent; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1 style="color:#00ff9d">⚡ SISTEMA TV - CRISTIAN DIAS</h1>
+    <div class="grid">
+        <div class="glass">
+            <h3>🏆 CONTROLES</h3>
+            <button class="btn" onclick="nav(-1)">◀</button>
+            <button class="btn" onclick="nav(1)">▶</button>
+            <p id="status">Canal: 1</p>
+        </div>
+        <div class="glass">
+            <video id="player" controls style="width:100%; height:400px;"></video>
+        </div>
+    </div>
 
+    <script>
+        // CANALES DIRECTOS (Formato .m3u8 para Chromecast)
+        const channels = [
+            { name: "Canal 5", url: "https://tv-stream-link-aqui.m3u8" },
+            { name: "HCH", url: "https://hch-stream-link-aqui.m3u8" }
+        ];
+        let idx = 0;
+        function nav(d) {
+            idx = (idx + d + channels.length) % channels.length;
+            const p = document.getElementById('player');
+            p.src = channels[idx].url;
+            p.play().catch(e => document.getElementById('status').innerText = "Error: Stream no compatible");
+        }
+    </script>
+</body>
+</html>
