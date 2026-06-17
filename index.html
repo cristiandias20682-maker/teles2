@@ -2,35 +2,46 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA TV CRISTIAN DIAS</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { background: #0f0f0f; color: white; font-family: sans-serif; margin: 0; display: flex; }
-        .sidebar { width: 200px; padding: 20px; background: #1a1a1a; height: 100vh; }
-        .content { flex: 1; padding: 20px; }
-        #video { width: 100%; max-width: 700px; background: #000; border-radius: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 20px; }
-        .canal { background: #333; padding: 10px; border-radius: 5px; cursor: pointer; text-align: center; font-size: 0.8rem; }
+        body { background: #0b0b0b; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; }
+        .sidebar { width: 220px; background: #141414; height: 100vh; padding: 25px; border-right: 1px solid #333; }
+        .content { flex: 1; padding: 30px; }
+        .video-box { width: 100%; max-width: 850px; background: #000; border-radius: 12px; margin-bottom: 25px; aspect-ratio: 16/9; }
+        #video { width: 100%; height: 100%; border-radius: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .canal { background: #1f1f1f; padding: 15px; border-radius: 6px; cursor: pointer; text-align: center; border: 1px solid #333; transition: 0.2s; }
+        .canal:hover { background: #007bff; border-color: #007bff; }
+        .logo { font-weight: bold; color: #007bff; margin-bottom: 50px; font-size: 1.2rem; line-height: 1.4; }
     </style>
 </head>
 <body>
-    <div class="sidebar"><h3>SISTEMA TV CRISTIAN DIAS</h3></div>
+    <div class="sidebar">
+        <div class="logo">SISTEMA TV<br>CRISTIAN DIAS</div>
+        <div style="color: #666;">● Inicio</div>
+    </div>
     <div class="content">
-        <video id="video" controls></video>
+        <h1>Mi TV Honduras</h1>
+        <div class="video-box">
+            <video id="video" controls autoplay></video>
+        </div>
         <div class="grid" id="lista"></div>
     </div>
+
     <script>
         const video = document.getElementById('video');
         const lista = document.getElementById('lista');
-        const hls = new Hls();
-
-        // Lista de canales base
+        
+        // Esta es tu lista de canales. 
+        // Si uno deja de funcionar, solo cambias el enlace aquí.
         const canales = [
             {n: "HCH", u: "https://stream.hch.tv/hch/hch.m3u8"},
-            {n: "Canal 5", u: "https://tv-honduras.com/canal5.m3u8"},
-            {n: "TSI", u: "https://tv-honduras.com/tsi.m3u8"},
+            {n: "Canal 5", u: "https://edge-televicentro.akamaized.net/hls/live/2000000/canal5/master.m3u8"},
+            {n: "Telecadena", u: "https://edge-televicentro.akamaized.net/hls/live/2000000/telecadena/master.m3u8"},
+            {n: "TSI", u: "https://edge-televicentro.akamaized.net/hls/live/2000000/tsi/master.m3u8"},
+            {n: "Mega TV", u: "https://edge-televicentro.akamaized.net/hls/live/2000000/megatv/master.m3u8"},
             {n: "Canal 8", u: "https://live.canal8.hn/live.m3u8"}
-            // ... (Agrega más aquí siguiendo el mismo formato)
         ];
 
         canales.forEach(c => {
@@ -38,8 +49,7 @@
             div.className = 'canal';
             div.innerText = c.n;
             div.onclick = () => {
-                hls.loadSource(c.u);
-                hls.attachMedia(video);
+                video.src = c.u;
                 video.play();
             };
             lista.appendChild(div);
