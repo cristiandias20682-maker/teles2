@@ -1,90 +1,66 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>SISTEMA TV - CRISTIAN DIAS</title>
-    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
-        :root { --bg: #05070a; --glass: rgba(255, 255, 255, 0.08); --accent: #00ff9d; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        :root {
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.15);
+            --accent: #00ff9d;
+        }
 
-        .glass { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        .main-layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; flex-grow: 1; min-height: 0; }
-        .sidebar { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        body { background: #05070a; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
+
+        /* EFECTO LIQUID GLASS */
+        .liquid-glass {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-container { display: grid; grid-template-columns: 320px 1fr; gap: 20px; height: 70vh; }
+
+        /* Panel Lateral */
+        .sidebar { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px; border-radius: 10px; cursor: pointer; }
         
-        .video-box { background: black; border: 2px solid var(--accent); border-radius: 20px; overflow: hidden; position: relative; }
-        .video-js { width: 100% !important; height: 100% !important; }
+        /* Video Box */
+        .video-box { border: 2px solid var(--accent); overflow: hidden; display: flex; align-items: center; justify-content: center; }
 
-        .shelf { display: flex; gap: 15px; overflow-x: auto; padding: 15px; margin-top: 15px; }
-        .channel-card { min-width: 160px; height: 80px; flex-shrink: 0; padding: 10px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(0,0,0,0.3); font-size: 11px; }
-
-        .dock { display: flex; justify-content: center; gap: 40px; margin-top: 15px; padding: 15px; }
-        .app-icon { width: 45px; height: 45px; cursor: pointer; transition: 0.3s; }
-        .app-icon:hover { transform: scale(1.2); }
+        /* Dock de Apps */
+        .dock { display: flex; justify-content: center; gap: 30px; padding: 15px; margin-top: 20px; }
+        .app-icon { width: 40px; cursor: pointer; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
     </style>
 </head>
 <body>
 
-    <div class="main-layout">
-        <div class="glass sidebar">
-            <h3 style="color:var(--accent)">NOTICIAS SULA (SB)</h3>
-            <div class="channel-card" onclick="playChannel('TU_URL_AQUI')">Noticias Sula 1</div>
-            <div class="channel-card" onclick="playChannel('TU_URL_AQUI')">Noticias Sula 2</div>
+    <div class="main-container">
+        <div class="liquid-glass sidebar">
+            <h3 style="color: var(--accent);">🏆 NOTICIAS SULA (SB)</h3>
+            <div class="liquid-glass" style="padding:10px; cursor:pointer;">Noticias Sula TV</div>
+            <div class="liquid-glass" style="padding:10px; cursor:pointer;">Sula En Vivo</div>
             
-            <h3 style="color:var(--accent); margin-top:10px;">SEÑALES</h3>
-            <div class="channel-card" onclick="window.open('https://www.televicentro.com')">Canal 5 (Oficial)</div>
-            <div class="channel-card" onclick="window.open('https://www.deportestvc.com')">Deportes TVC</div>
+            <h3 style="color: var(--accent);">SEÑALES</h3>
+            <div class="liquid-glass" style="padding:10px; cursor:pointer;">Canal 5 (Oficial)</div>
+            
+            <div style="display: flex; gap: 10px; margin-top: auto;">
+                <button class="nav-btn">◀ IZQ</button>
+                <button class="nav-btn">DER ▶</button>
+            </div>
         </div>
-        
-        <div class="video-box glass">
-            <video id="reproductor" class="video-js vjs-big-play-centered" controls preload="auto"></video>
+
+        <div class="liquid-glass video-box">
+            <video id="player" controls style="width:100%; height:100%"></video>
         </div>
     </div>
 
-    <div id="shelf" class="shelf glass"></div>
-
-    <div class="dock glass">
-        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" onclick="window.open('https://youtube.com')">
-        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" onclick="window.open('https://netflix.com')">
-        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg" onclick="window.open('https://primevideo.com')">
-        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" onclick="window.open('https://disneyplus.com')">
+    <div class="liquid-glass dock">
+        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg">
+        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg">
+        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg">
     </div>
 
-    <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
-    <script>
-        const player = videojs('reproductor');
-        
-        // Función segura para cargar canales
-        function playChannel(url) {
-            if(url.includes('TU_URL_AQUI')) {
-                alert("Primero debes poner un enlace válido en el código.");
-                return;
-            }
-            player.src({src: url, type: 'application/x-mpegURL'});
-            player.play();
-        }
-
-        const blockList = ["Alfa", "Aviva", "Campus", "Girasol", "32 STO", "Cholusat", "Talanga"];
-
-        async function loadChannels() {
-            const shelf = document.getElementById('shelf');
-            const res = await fetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u');
-            const data = await res.text();
-            data.split('\n').forEach((line, i, arr) => {
-                if (line.startsWith('#EXTINF:')) {
-                    const name = line.split(',')[1];
-                    const url = arr[i + 1];
-                    if (!blockList.some(b => name.includes(b))) {
-                        const div = document.createElement('div');
-                        div.className = 'channel-card';
-                        div.innerHTML = `<b>LIVE</b><br>${name.substring(0, 18)}`;
-                        div.onclick = () => { player.src({src: url, type: 'application/x-mpegURL'}); player.play(); };
-                        shelf.appendChild(div);
-                    }
-                }
-            });
-        }
-        loadChannels();
-    </script>
 </body>
 </html>
