@@ -1,1 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TV Honduras - Auto Actualizable</title>
+    <style>
+        body { background: #0f0f0f; color: white; font-family: sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 20px; }
+        .canal { background: #222; padding: 15px; border-radius: 8px; cursor: pointer; border: 1px solid #444; }
+        .canal:hover { background: #444; }
+    </style>
+</head>
+<body>
+    <h1>Mi TV Honduras (Auto-Actualizable)</h1>
+    <div class="grid" id="lista">Cargando canales...</div>
 
+    <script>
+        // Esta es una lista pública de canales de Honduras que se mantiene sola
+        const playlistUrl = 'https://iptv-org.github.io/iptv/countries/hn.m3u';
+
+        async function cargarCanales() {
+            const respuesta = await fetch(playlistUrl);
+            const data = await respuesta.text();
+            const lineas = data.split('\n');
+            const contenedor = document.getElementById('lista');
+            contenedor.innerHTML = '';
+
+            for (let i = 0; i < lineas.length; i++) {
+                if (lineas[i].startsWith('#EXTINF')) {
+                    const nombre = lineas[i].split(',')[1];
+                    const url = lineas[i + 1];
+                    
+                    const div = document.createElement('div');
+                    div.className = 'canal';
+                    div.innerText = nombre;
+                    div.onclick = () => {
+                        // Esto abre el canal en tu móvil para que puedas usar el botón de 'Cast'
+                        window.location.href = `intent:${url}#Intent;scheme=http;package=com.mx.player;end`;
+                    };
+                    contenedor.appendChild(div);
+                }
+            }
+        }
+        cargarCanales();
+    </script>
+</body>
+</html>
