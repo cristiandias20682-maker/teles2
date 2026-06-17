@@ -5,85 +5,259 @@
     <title>SISTEMA TV - CRISTIAN DIAS</title>
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
-        :root { 
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
+        :root {
+            --bg-body: #05070a;
+            --panel: rgba(26, 30, 38, 0.4); /* Transparencia base */
             --accent: #00ff9d;
+            --white: #ffffff;
+            --gray: #888;
+            --glass-blur: blur(15px);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
-        body { background: #05070a; color: #fff; font-family: sans-serif; margin: 0; padding: 25px; overflow: hidden; }
 
-        .layout { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        body {
+            background: var(--bg-body);
+            color: var(--white);
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            margin: 0;
+            padding: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Encabezado */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .marca-tv { font-size: 22px; font-weight: 800; text-transform: uppercase; }
+        .reloj-tv { font-size: 16px; color: var(--gray); font-weight: bold; }
+
+        /* Estructura Principal */
+        .layout-tv {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            flex-grow: 1;
+        }
+
+        /* Sección Izquierda: Señales Exclusivas */
+        .seccion-exclusivas { display: flex; flex-direction: column; gap: 15px; }
+        .titulo-seccion { color: var(--accent); font-size: 14px; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
         
         /* Efecto Liquid Glass */
-        .glass { 
-            background: var(--glass); backdrop-filter: blur(20px); 
-            border: 1px solid var(--glass-border); border-radius: 20px;
+        .vidrio-liquid {
+            background: var(--panel);
+            backdrop-filter: var(--glass-blur);
+            border: var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.15s ease-out;
         }
 
-        .video-container { background: #000; border: 2px solid var(--accent); height: 420px; border-radius: 25px; box-shadow: 0 0 30px rgba(0,255,157,0.2); }
-        
-        .card { padding: 15px; margin-bottom: 10px; cursor: pointer; transition: 0.3s; }
-        .card:hover { border-color: var(--accent); transform: scale(1.02); }
-        .active { border: 2px solid var(--accent); }
+        .vidrio-liquid:hover, .vidrio-liquid:focus {
+            border-color: rgba(0, 255, 157, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.2), var(--glass-shadow);
+            transform: scale(1.02);
+            outline: none;
+        }
 
-        .carousel { display: flex; gap: 15px; margin-top: 30px; overflow-x: auto; padding: 10px; }
-        .canal-item { min-width: 190px; height: 100px; display: flex; flex-direction: column; justify-content: flex-end; }
-        
-        .live-tag { color: #ff4b4b; font-size: 9px; font-weight: 800; }
+        .card-exclusiva { font-size: 14px; }
+
+        /* Reproductor (Derecha) */
+        .contenedor-reproductor {
+            background: #000;
+            border-radius: 20px;
+            border: 2px solid var(--accent);
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.1);
+        }
+
+        /* Sección Inferior: Canales Nacionales */
+        .layout-inferior { margin-top: 25px; }
+
+        .carrusel-nacionales {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 5px 0;
+            scroll-behavior: smooth;
+        }
+
+        .carrusel-nacionales::-webkit-scrollbar { display: none; } /* Ocultar barra */
+
+        .card-canal {
+            min-width: 180px;
+            height: 90px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .card-canal.seleccionado {
+            border-color: var(--accent);
+            border-width: 2px;
+            color: var(--white);
+        }
+
+        .tag-live {
+            color: #ff4b4b;
+            font-size: 8px;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        /* Dock de Apps */
+        .dock-apps {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .icono-app {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: var(--glass-border);
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--white);
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        .icono-app.yt { background-color: #ff0000; }
+        .icono-app.nf { background-color: #e50914; }
+        .icono-app.prime { background-color: #00a8e1; }
+
     </style>
 </head>
 <body>
 
-    <header style="display:flex; justify-content:space-between; margin-bottom:20px;">
-        <div style="font-size: 22px; font-weight: bold;">SISTEMA DE CANALES - CRISTIAN DIAS</div>
-        <div id="reloj" style="color:#888;">00:00:00</div>
+    <header class="header">
+        <div class="marca-tv">SISTEMA DE CANALES - CRISTIAN DIAS</div>
+        <div id="reloj" class="reloj-tv">00:00:00</div>
     </header>
 
-    <div class="layout">
-        <div class="panel-izq">
-            <div style="color:var(--accent); margin-bottom:10px;">🏆 SEÑALES EXCLUSIVAS</div>
-            <div class="glass card" onclick="window.open('https://www.televicentro.com','_blank')">Canal 5 (Oficial)</div>
-            <div class="glass card" onclick="window.open('https://www.deportestvc.com','_blank')">Deportes TVC</div>
+    <div class="layout-tv">
+        <div class="seccion-exclusivas">
+            <div class="titulo-seccion">🏆 SEÑALES EXCLUSIVAS (MUNDIAL)</div>
+            <div class="vidrio-liquid card-exclusiva" tabindex="0" onclick="window.open('https://www.televicentro.com', '_blank')">
+                Ver CANAL 5 (Oficial)
+            </div>
+            <div class="vidrio-liquid card-exclusiva" tabindex="0" onclick="window.open('https://www.deportestvc.com', '_blank')">
+                Ver DEPORTES TVC
+            </div>
         </div>
-        <div class="video-container glass" id="reproductor-box">
-            <video id="player" class="video-js vjs-default-skin" controls width="100%" height="420px"></video>
+
+        <div class="contenedor-reproductor">
+            <video id="reproductor" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%" height="100%"></video>
         </div>
     </div>
 
-    <div style="color:var(--accent); margin-top:30px;">🌐 CANALES NACIONALES</div>
-    <div class="carousel" id="lista-canales"></div>
+    <div class="layout-inferior">
+        <div class="titulo-seccion">🌐 CANALES NACIONALES</div>
+        <div class="carrusel-nacionales" id="lista-canales-dinamicos"></div>
+    </div>
+
+    <div class="dock-apps">
+        <div class="icono-app yt">YT</div>
+        <div class="icono-app nf">NF</div>
+        <div class="icono-app prime">PRIME</div>
+    </div>
 
     <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
     <script>
-        const player = videojs('player', { autoplay: true });
-        setInterval(() => document.getElementById('reloj').innerText = new Date().toLocaleTimeString(), 1000);
+        const player = videojs('reproductor', {
+            autoplay: true,
+            muted: false,
+            fluid: false
+        });
 
-        async function cargar() {
-            const res = await fetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u');
-            const data = await res.text();
-            const container = document.getElementById('lista-canales');
-            const lines = data.split('\n');
+        // Reloj
+        setInterval(() => {
+            const ahora = new Date();
+            document.getElementById('reloj').innerText = ahora.toLocaleTimeString();
+        }, 1000);
 
-            for(let i=0; i<lines.length; i++) {
-                if(lines[i].startsWith('#EXTINF:')) {
-                    const name = lines[i].split(',')[1];
-                    const url = lines[i+1];
-                    if(name && url) {
-                        const div = document.createElement('div');
-                        div.className = 'glass card canal-item';
-                        div.innerHTML = `<span class="live-tag">LIVE</span><div>${name}</div>`;
-                        div.onclick = () => {
-                            player.src({src: url, type: 'application/x-mpegURL'});
-                            player.play();
-                            document.querySelectorAll('.canal-item').forEach(c => c.classList.remove('active'));
-                            div.classList.add('active');
-                        };
-                        container.appendChild(div);
+        // Carga Dinámica con Filtro y Efecto Liquid Glass
+        const URL_M3U = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u';
+        const listaNegra = ["alfa & omega vision", "aviva tv", "campus tv", "canal 5 el líder", "canal 7 talanga visión", "canal 32 sto", "cholusat sur 36", "deportes tvc", "cva tv", "edn tv", "girasol tv", "globo tv", "inmaculada tv", "la 98.1 tv", "litoral atlántico", "ltv", "maya tv"];
+
+        async function cargarLista() {
+            try {
+                const res = await fetch(URL_M3U);
+                const data = await res.text();
+                const container = document.getElementById('lista-canales-dinamicos');
+                const lineas = data.split('\n');
+
+                let count = 0;
+                for (let i = 0; i < lineas.length && count < 8; i++) {
+                    const linea = lineas[i].trim();
+                    if (linea.startsWith('#EXTINF:')) {
+                        const name = linea.split(',')[1] || "Canal";
+                        const url = lineas[i + 1].trim();
+
+                        if (url.startsWith('http') && !listaNegra.some(b => name.toLowerCase().includes(b))) {
+                            const div = document.createElement('div');
+                            div.className = 'vidrio-liquid card-canal';
+                            div.tabIndex = 0;
+                            div.innerHTML = `<span class="tag-live">LIVE</span><div>${name.substring(0, 20)}</div>`;
+                            
+                            div.onclick = () => {
+                                player.src({src: url, type: 'application/x-mpegURL'});
+                                player.play();
+                                document.querySelectorAll('.card-canal').forEach(c => c.classList.remove('seleccionado'));
+                                div.classList.add('seleccionado');
+                            };
+                            container.appendChild(div);
+                            count++;
+                        }
                     }
                 }
+            } catch (e) {
+                console.error("Error cargando la lista:", e);
             }
         }
-        cargar();
+
+        // Navegación con Teclado (Para Smart TV)
+        window.addEventListener('keydown', (e) => {
+            const focused = document.activeElement;
+            const container = document.getElementById('lista-canales-dinamicos');
+
+            if (!container.contains(focused)) return;
+
+            let target = null;
+            if (e.key === 'ArrowRight') target = focused.nextElementSibling;
+            if (e.key === 'ArrowLeft') target = focused.previousElementSibling;
+
+            if (target) {
+                target.focus();
+                target.click();
+            }
+        });
+
+        window.onload = cargarLista;
     </script>
 </body>
 </html>
