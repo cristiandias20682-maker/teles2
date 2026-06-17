@@ -8,18 +8,21 @@
         :root { --bg: #05070a; --glass: rgba(255, 255, 255, 0.08); --accent: #00ff9d; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Interfaz Original Restaurada */
-        .glass { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; }
+        /* Estilo Liquid Glass */
+        .glass { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        
         .main-layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; flex-grow: 1; min-height: 0; }
         
-        .video-box { background: black; border: 2px solid var(--accent); border-radius: 20px; overflow: hidden; display: flex; }
+        .video-box { background: black; border: 2px solid var(--accent); border-radius: 20px; overflow: hidden; }
         .video-js { width: 100% !important; height: 100% !important; }
 
         .shelf { display: flex; gap: 15px; overflow-x: auto; padding: 15px; margin-top: 15px; }
         .channel-card { min-width: 160px; height: 80px; flex-shrink: 0; padding: 10px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(0,0,0,0.3); font-size: 11px; }
-        
-        .dock { display: flex; justify-content: center; gap: 40px; margin-top: 15px; padding: 15px; }
-        .app-icon { width: 45px; height: 45px; cursor: pointer; transition: 0.3s; }
+
+        /* DOCK RESTAURADO */
+        .dock { display: flex; justify-content: center; gap: 40px; margin-top: 15px; padding: 15px 40px; }
+        .app-icon { width: 50px; height: 50px; cursor: pointer; transition: 0.3s; }
+        .app-icon:hover { transform: scale(1.2); }
     </style>
 </head>
 <body>
@@ -27,12 +30,11 @@
     <div class="main-layout">
         <div class="glass" style="padding: 20px;">
             <h3 style="color:var(--accent)">NOTICIAS SULA (SB)</h3>
-            <div class="channel-card" style="margin-bottom:10px" onclick="player.src('URL_NOTICIA_1')">Noticias Sula 1</div>
-            <div class="channel-card" style="margin-bottom:10px" onclick="player.src('URL_NOTICIA_2')">Noticias Sula 2</div>
+            <div class="channel-card" onclick="player.src('TU_URL_AQUI')">Noticias Sula TV</div>
+            <div class="channel-card" style="margin-top:10px" onclick="player.src('TU_URL_AQUI')">Sula En Vivo</div>
             
             <h3 style="color:var(--accent); margin-top:20px;">SEÑALES</h3>
-            <div class="channel-card" style="margin-bottom:10px" onclick="window.open('https://www.televicentro.com')">Canal 5 (Oficial)</div>
-            <div class="channel-card" style="margin-bottom:10px" onclick="window.open('https://www.deportestvc.com')">Deportes TVC</div>
+            <div class="channel-card" onclick="window.open('https://www.televicentro.com')">Canal 5 (Oficial)</div>
         </div>
         
         <div class="video-box glass">
@@ -42,16 +44,20 @@
 
     <div id="shelf" class="shelf glass"></div>
 
+    <div class="dock glass">
+        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" onclick="window.open('https://youtube.com')">
+        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" onclick="window.open('https://netflix.com')">
+        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg" onclick="window.open('https://primevideo.com')">
+        <img class="app-icon" src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" onclick="window.open('https://disneyplus.com')">
+    </div>
+
     <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
     <script>
         const player = videojs('reproductor');
-        
-        // Lista de canales a eliminar definitivamente
-        const blockList = ["Alfa & Omega", "Aviva", "Campus", "Girasol", "32 STO", "Cholusat", "Talanga"];
+        const blockList = ["Alfa", "Aviva", "Campus", "Girasol", "32 STO", "Cholusat", "Talanga"];
 
         async function loadChannels() {
             const shelf = document.getElementById('shelf');
-            shelf.innerHTML = ''; 
             const res = await fetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u');
             const data = await res.text();
             
@@ -59,8 +65,6 @@
                 if (line.startsWith('#EXTINF:')) {
                     const name = line.split(',')[1];
                     const url = arr[i + 1];
-                    
-                    // Filtrar los canales no deseados
                     if (!blockList.some(b => name.includes(b))) {
                         const div = document.createElement('div');
                         div.className = 'channel-card';
