@@ -3,48 +3,456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Liquid IPTV - CAST</title>
-    <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+    <title>Premium Liquid IPTV</title>
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
-        /* ... TUS ESTILOS EXISTENTES SE MANTIENEN ... */
-        /* AGREGAMOS ESTILO PARA EL BOTÓN DE CAST */
-        .cast-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            background: rgba(0,0,0,0.5);
-            border-radius: 50%;
-            padding: 5px;
+        :root {
+            --bg-gradiente: radial-gradient(circle at 50% 30%, #0a111e 0%, #05070b 100%);
+            --liquid-bg: linear-gradient(135deg, rgba(25, 36, 56, 0.45) 0%, rgba(13, 19, 31, 0.7) 100%);
+            --liquid-bg-hover: linear-gradient(135deg, rgba(35, 52, 82, 0.6) 0%, rgba(18, 27, 46, 0.85) 100%);
+            --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.15);
+            --neon-cyan: 0 0 20px rgba(0, 191, 255, 0.4);
+            --neon-verde: 0 0 25px rgba(0, 255, 157, 0.6);
+            --text-main: #f7fafc;
+            --text-sub: #90cdf4;
         }
-        google-cast-launcher {
-            width: 40px;
-            height: 40px;
-            display: block;
+
+        body {
+            background: var(--bg-gradiente);
+            color: var(--text-main);
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            text-rendering: discrete;
+            -webkit-font-smoothing: antialiased;
+            scroll-behavior: smooth;
+        }
+
+        /* BOTONERA VERTICAL IZQUIERDA PEQUEÑA CORREGIDA */
+        #control-vertical-tv {
+            position: fixed;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%) translateZ(0);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10000;
+            background: rgba(10, 15, 24, 0.6);
+            padding: 8px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-control-total {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .btn-control-total:hover, .btn-control-total:focus {
+            border-color: #00ff9d;
+            box-shadow: var(--neon-verde);
+            transform: scale(1.1);
+            outline: none;
+        }
+
+        /* CONTENEDOR FLUIDO CORRECTO */
+        .contenido-principal {
+            padding-left: 80px;
+            padding-right: 20px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        #header-sistema {
+            padding: 20px 0 5px 0;
+        }
+
+        .titulo-marca {
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ffffff, #90cdf4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        #contenedor-reproductor {
+            width: 100%;
+            max-width: 1100px;
+            margin: 10px 0 20px 0;
+            background: #000;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .seccion-interfaz {
+            padding: 10px 0;
+            width: 100%;
+        }
+
+        .titulo-fila {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            color: #cbd5e0;
+        }
+
+        .grid-cuadros {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .grid-cuadros::-webkit-scrollbar, .grid-carrusel-infinito::-webkit-scrollbar {
+            display: none;
+        }
+
+        .wrapper-carrusel {
+            position: relative;
+            width: 100%;
+        }
+
+        .grid-carrusel-infinito {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 5px 0;
+            width: 100%;
+        }
+
+        /* TARJETAS LIQUID GLASS */
+        .card-canal {
+            background: var(--liquid-bg);
+            border-radius: 18px;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            height: 75px;
+            width: 190px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            box-shadow: var(--glass-shadow);
+            transform: translateZ(0); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-sizing: border-box;
+        }
+
+        .card-canal::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            pointer-events: none;
+        }
+
+        .card-canal:hover, .card-canal:focus {
+            background: var(--liquid-bg-hover);
+            transform: scale(1.05) translateZ(0);
+            border-color: rgba(0, 191, 255, 0.6);
+            box-shadow: var(--glass-shadow), var(--neon-cyan);
+            outline: none;
+        }
+
+        .card-canal.activo {
+            border-color: #00ff9d !important;
+            background: linear-gradient(135deg, rgba(10, 48, 34, 0.75) 0%, rgba(5, 28, 20, 0.9) 100%) !important;
+            box-shadow: var(--glass-shadow), var(--neon-verde);
+        }
+
+        .canal-meta {
+            font-size: 10px;
+            color: var(--text-sub);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .canal-titulo-texto {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .tag-live-premium {
+            position: absolute;
+            top: 10px; right: 12px;
+            background: linear-gradient(180deg, #ff4b4b 0%, #c52828 100%);
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 5px;
+        }
+
+        /* CONTROLES HORIZONTALES PEQUEÑOS */
+        .controles-tv-carrusel {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-tv-flecha {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 10px;
             cursor: pointer;
         }
-        /* ... RESTO DE TU CSS ... */
+
+        .btn-tv-flecha:hover, .btn-tv-flecha:focus {
+            border-color: #00ff9d;
+            background: rgba(40, 55, 80, 0.8);
+            outline: none;
+        }
+
+        /* DOCK GENERAL CORREGIDO */
+        #dock-apps {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateZ(0);
+            background: linear-gradient(180deg, rgba(20, 28, 43, 0.85) 0%, rgba(10, 15, 24, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            z-index: 9999;
+        }
+
+        .app-icono {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .espacio-final { height: 110px; }
     </style>
 </head>
 <body>
 
-    <div id="contenedor-reproductor" style="position: relative;">
-        <div class="cast-container">
-            <google-cast-launcher></google-cast-launcher>
-        </div>
-        <video id="reproductor-tv" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%"></video>
+    <div id="control-vertical-tv">
+        <button class="btn-control-total" onclick="navegarVertical('arriba')" title="Subir">▲</button>
+        <button class="btn-control-total" onclick="navegarVertical('abajo')" title="Bajar">▼</button>
     </div>
 
+    <div class="contenido-principal">
+        <div id="header-sistema">
+            <h1 class="titulo-marca">SISTEMA DE CANALES DE CRISTIAN DIAS TROCHEZ</h1>
+        </div>
+
+        <div id="contenedor-reproductor">
+            <video id="reproductor-tv" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%"></video>
+        </div>
+
+        <div class="seccion-interfaz" id="sec-exclusivas">
+            <div class="titulo-fila">🏆 SEÑALES EXCLUSIVAS (MUNDIAL)</div>
+            <div class="grid-cuadros">
+                <div class="card-canal" tabindex="0" onclick="window.open('https://www.televicentro.com', '_blank')">
+                    <span class="tag-live-premium">WEB</span>
+                    <div class="canal-meta">Televicentro</div>
+                    <div class="canal-titulo-texto">Ver CANAL 5 (Oficial)</div>
+                </div>
+                <div class="card-canal" tabindex="0" onclick="window.open('https://www.deportestvc.com', '_blank')">
+                    <span class="tag-live-premium">WEB</span>
+                    <div class="canal-meta">Deportes TVC</div>
+                    <div class="canal-titulo-texto">Ver DEPORTES TVC</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="seccion-interfaz" id="sec-nacionales">
+            <div class="titulo-fila">🌐 CANALES NACIONALES (AUTOMÁTICOS)</div>
+            <div class="wrapper-carrusel">
+                <div class="grid-carrusel-infinito" id="contenedor-canales-dinamicos">
+                    </div>
+                
+                <div class="controles-tv-carrusel">
+                    <button class="btn-tv-flecha" tabindex="0" onclick="moverCarrusel('izquierda')">◀ IZQ</button>
+                    <button class="btn-tv-flecha" tabindex="0" onclick="moverCarrusel('derecha')">DER ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dock-apps">
+        <div class="app-icono" style="background: #ff0000;" tabindex="0" onclick="window.open('https://www.youtube.com', '_blank')">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93 .502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </div>
+        <div class="app-icono" style="background: #e50914;" tabindex="0" onclick="window.open('https://www.netflix.com', '_blank')"><span style="font-weight:900;color:white;">N</span></div>
+        <div class="app-icono" style="background: #00a8e1; font-size:10px; font-weight:bold; color:white;" tabindex="0" onclick="window.open('https://www.primevideo.com', '_blank')">PV</div>
+    </div>
+
+    <div class="espacio-final"></div>
+
+    <script src="https://vjs.zencdn.net/7.20.3/video.js"></script>
     <script>
-        window['__onGCastApiAvailable'] = function(isAvailable) {
-            if (isAvailable) {
-                cast.framework.CastContext.getInstance().setOptions({
-                    receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-                    autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-                });
+        const player = videojs('reproductor-tv', { fluid: true });
+        const URL_M3U = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hn.m3u';
+
+        const canalesABorrar = [
+            "alfa & omega vision", "aviva tv", "campus tv", "canal 5 el líder", 
+            "canal 7 talanga visión", "canal 32 sto", "cholusat sur 36", 
+            "deportes tvc", "cva tv", "edn tv", "girasol tv", "globo tv", 
+            "inmaculada tv", "la 98.1 tv", "litoral atlántico", "ltv", "maya tv"
+        ];
+
+        function moverCarrusel(direccion) {
+            const carrusel = document.getElementById('contenedor-canales-dinamicos');
+            const desplazamiento = 210;
+            carrusel.scrollBy({ left: direccion === 'izquierda' ? -desplazamiento : desplazamiento, behavior: 'smooth' });
+        }
+
+        function navegarVertical(direccion) {
+            if (direccion === 'arriba') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                document.getElementById('sec-nacionales').scrollIntoView({ behavior: 'smooth' });
             }
-        };
+        }
+
+        // CONTROL D-PAD SUTILA COORDENADO
+        document.addEventListener('keydown', function(e) {
+            const elementosEnfocables = Array.from(document.querySelectorAll('.card-canal, .btn-tv-flecha, .btn-control-total, .app-icono'));
+            let indiceActual = elementosEnfocables.indexOf(document.activeElement);
+
+            if (e.key === 'ArrowRight') {
+                if (indiceActual < elementosEnfocables.length - 1) elementosEnfocables[indiceActual + 1].focus();
+            } else if (e.key === 'ArrowLeft') {
+                if (indiceActual > 0) elementosEnfocables[indiceActual - 1].focus();
+            } else if (e.key === 'ArrowDown') {
+                navegarVertical('abajo');
+                const primerCanalNacional = document.querySelector('#contenedor-canales-dinamicos .card-canal');
+                if (primerCanalNacional) primerCanalNacional.focus();
+            } else if (e.key === 'ArrowUp') {
+                navegarVertical('arriba');
+                const primerCanalExclusivo = document.querySelector('#sec-exclusivas .card-canal');
+                if (primerCanalExclusivo) primerCanalExclusivo.focus();
+            }
+        });
+
+        async function cargarCanales() {
+            try {
+                const contenedor = document.getElementById('contenedor-canales-dinamicos');
+                const respuesta = await fetch(URL_M3U);
+                const texto = await respuesta.text();
+                const lineas = texto.split('\n');
+                const fragmento = document.createDocumentFragment();
+                let nombreCanal = '';
+
+                for (let i = 0; i < lineas.length; i++) {
+                    const linea = lineas[i].trim();
+                    if (!linea) continue;
+
+                    if (linea.startsWith('#EXTINF:')) {
+                        const partes = linea.split(',');
+                        nombreCanal = (partes[1] || 'Canal').trim();
+                    } else if (linea.startsWith('http') && nombreCanal) {
+                        const nombreMin = nombreCanal.toLowerCase();
+                        let deberiaBorrar = false;
+                        
+                        for (let j = 0; j < canalesABorrar.length; j++) {
+                            if (nombreMin.indexOf(canalesABorrar[j]) !== -1) {
+                                deberiaBorrar = true; // CORREGIDO: Se quitó el punto accidental del bug anterior
+                                break;
+                            }
+                        }
+
+                        if (!deberiaBorrar) {
+                            const card = document.createElement('div');
+                            card.className = 'card-canal';
+                            card.tabIndex = 0;
+                            
+                            const tagLive = document.createElement('span');
+                            tagLive.className = 'tag-live-premium';
+                            tagLive.innerText = 'LIVE';
+                            card.appendChild(tagLive);
+
+                            const metaTag = document.createElement('div');
+                            metaTag.className = 'canal-meta';
+                            metaTag.innerText = nombreCanal.substring(0, 12);
+                            card.appendChild(metaTag);
+
+                            const tituloTexto = document.createElement('div');
+                            tituloTexto.className = 'canal-titulo-texto';
+                            tituloTexto.innerText = nombreCanal;
+                            card.appendChild(tituloTexto);
+                            
+                            const urlActual = linea;
+                            const ejecutarSeleccion = function() {
+    // 1. Esto le dice a la app: "Oye, este es un video"
+    const videoElement = document.querySelector('video');
+    if (videoElement) {
+        videoElement.src = urlActual;
+    }
+    
+    // ... dentro de ejecutarSeleccion ...
+player.src({ type: 'application/x-mpegURL', src: urlActual });
+player.play(); 
+
+// AGREGA ESTA LÍNEA JUSTO DESPUÉS:
+player.tech({ IWillNotUseThisInProduction: true }).hls.xhr.requestOptions = { withCredentials: false };
+    
+    // 3. Esto ayuda a Web Video Cast a detectar el enlace
+    const metaTag = document.createElement('meta');
+    metaTag.setAttribute('property', 'og:video');
+    metaTag.setAttribute('content', urlActual);
+    document.head.appendChild(metaTag);
+
+    const todas = contenedor.getElementsByClassName('card-canal');
+    for (let j = 0; j < todas.length; j++) todas[j].classList.remove('activo');
+    card.classList.add('activo');
+};
+ 
+
+                            card.onclick = ejecutarSeleccion;
+                            card.onkeydown = function(e) { if(e.key === 'Enter') ejecutarSeleccion(); };
+                            
+                            fragmento.appendChild(card);
+                        }
+                        nombreCanal = '';
+                    }
+                }
+                contenedor.innerHTML = '';
+                contenedor.appendChild(fragmento);
+            } catch (error) { console.error(error); }
+        }
+
+        window.addEventListener('load', cargarCanales, { passive: true });
     </script>
-    </body>
+</body>
 </html>
